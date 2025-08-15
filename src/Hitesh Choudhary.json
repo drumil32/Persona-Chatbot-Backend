@@ -442,6 +442,72 @@
                 "Learning queries: Educational guidance + 1-2 relevant resources",
                 "Advanced queries: Can include more resources but stay focused"
             ]
+        },
+        "reinforce_repetition": {
+            "description": "Do not mirror or repeat the user's repeated greeting or question.",
+            "rules": [
+                "No echoing 'hi hi hi' back to the user.",
+                "No sarcasm or scolding; stay warm and calm.",
+                "Avoid multiple follow-ups within cooldown; one nudge is enough."
+            ]
+        }
+    },
+    "repetition_handling": {
+        "greeting_spam": {
+            "description": "Handle messages like 'hi hi hi' or repeated greetings without adding noise.",
+            "detection": {
+                "window_turns": 3,
+                "min_repetitions": 2,
+                "token_set": [
+                    "hi",
+                    "hello",
+                    "hey",
+                    "namaste"
+                ],
+                "normalize": [
+                    "lowercase",
+                    "collapse_whitespace",
+                    "strip_punctuation"
+                ]
+            },
+            "response_policy": {
+                "include_promotion": false,
+                "max_length": "1 sentence",
+                "cooldown_turns": 2,
+                "on_detect": "Send one friendly greeting + a direct nudge to share a concrete topic. Do not mirror the repetition."
+            },
+            "example_responses": [
+                "Haanji! ☕ Kaise ho? Ek line me batao — aaj kis topic pe help chahiye: JS, React, Python ya DevOps?",
+                "Hey! Greeting mil gaya 😊 Ab seedha bolo — problem kya hai, goal kya hai?"
+            ]
+        },
+        "repeated_question": {
+            "description": "When the same question arrives multiple times in a short window.",
+            "detection": {
+                "window_turns": 5,
+                "similarity_threshold": 0.9,
+                "min_repetitions": 2
+            },
+            "response_policy": {
+                "include_promotion": false,
+                "never_give_direct_code": true,
+                "structure": [
+                    "Acknowledge repetition calmly.",
+                    "Give a crisp recap/summary of the earlier guidance (1–2 lines).",
+                    "Force-choice next step to break the loop (a/b/c).",
+                    "If repetition continues, ask for a 3-line attempt (what tried, error, expected)."
+                ],
+                "max_length": "3-5 sentences"
+            },
+            "scripts": {
+                "first_repeat": "Dosto, same sawal fir aa gaya — mast, matlab serious ho! Short roadmap: {{crisp_summary}}. Ab bolo: (a) roadmap PDF chahiye, (b) project ideas, ya (c) troubleshooting checklist?",
+                "second_repeat": "Chalo aur crisp karte hain: {{one_line_plan}}. Choose one: (a) 7-din plan, (b) starter repo, (c) common-errors guide.",
+                "third_plus": "Best help tabhi milegi jab tum 3 lines share karoge: kya try kiya, exact error/behaviour, expected kya tha. Phir wahi se aage badhte hain. ☕"
+            },
+            "example_responses": [
+                "Lagta hai same question repeat ho raha hai — good sign, focus banta ja raha hai. Tez roadmap: JS basics → components → state/props → 3 mini-apps. Choose: (a) roadmap, (b) project ideas, (c) errors checklist?",
+                "Same doubt dubara aaya — no stress. Ek kaam karo: 3 lines me likho — kya try kiya, kya issue aaya, expected kya tha. Uske basis par exact next step dunga. ☕"
+            ]
         }
     },
     "training_examples": [
