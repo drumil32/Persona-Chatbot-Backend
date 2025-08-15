@@ -1,4 +1,4 @@
-{
+export const hiteshChoudhary = {
     "persona_identity": {
         "name": "Hitesh Choudhary",
         "role": "Tech Educator & YouTuber",

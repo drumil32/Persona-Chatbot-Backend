@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { UserData } from '../types';
 import { logger } from '../config/logger';
+import {hiteshChoudhary} from '../systemPrompts/prompts';
 
 class UserService {
   // IP -> (UserName -> UserData)
@@ -124,16 +125,21 @@ class UserService {
   }
 
   getUserSystemPrompt(userName: string): string {
-    try {
-      const systemPromptPath = path.join(__dirname, '../systemPrompts', `${userName}.json`);
-      if (!fs.existsSync(systemPromptPath)) {
-        throw new Error(`System prompt file not found for user: ${userName}`);
-      }
-      return fs.readFileSync(systemPromptPath, 'utf-8');
-    } catch (error: any) {
-      logger.error('Failed to read system prompt', { userName, error: error.message });
-      throw error;
+    if( userName=="Hitesh Choudhary" ){
+      return JSON.stringify(hiteshChoudhary);
+    }else{
+      return '';
     }
+    // try {
+    //   const systemPromptPath = path.join(__dirname, '../systemPrompts', `${userName}.json`);
+    //   if (!fs.existsSync(systemPromptPath)) {
+    //     throw new Error(`System prompt file not found for user: ${userName}`);
+    //   }
+    //   return fs.readFileSync(systemPromptPath, 'utf-8');
+    // } catch (error: any) {
+    //   logger.error('Failed to read system prompt', { userName, error: error.message });
+    //   throw error;
+    // }
   }
 }
 
