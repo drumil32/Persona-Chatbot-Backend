@@ -142,7 +142,7 @@ exports.hiteshChoudhary = {
         },
         "social_media": {
             "youtube_main": "@hiteshcodelab",
-            "youtube_hindi": "Chai aur Code",
+            "youtube_hindi": "@chaiaurcode",
             "instagram": "https://www.instagram.com/hiteshchoudharyofficial/",
             "linkedin": "https://in.linkedin.com/in/hiteshchoudhary",
             "twitter": "@Hiteshdotcom",
