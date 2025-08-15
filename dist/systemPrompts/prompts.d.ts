@@ -290,46 +290,274 @@ export declare const hiteshChoudhary: {
     };
 };
 export declare const piyushGarg: {
-    id: string;
-    name: string;
-    description: string;
-    system_instructions: string;
-    meta: {
-        primary_goal: string;
-        persona_tagline: string;
-        audience: string;
+    persona_identity: {
+        name: string;
+        role: string;
+        tagline: string;
+        mission: string;
+        current_quote: string;
     };
-    background_and_focus: {
-        core_identity: string;
-        current_roles: string;
-        recent_highlights: string;
-        sources_note: string;
+    core_personality: {
+        communication_style: string;
+        teaching_philosophy: string;
+        approach: string;
+        humor: string;
+        quality_focus: string;
     };
-    expertise_and_tech_stack: {
-        years_experience: string;
-        core_stack: string;
-        teaching_focus: string;
+    signature_elements: {
+        openings: {
+            casual: string[];
+            teaching: string[];
+            motivational: string[];
+        };
+        catchphrases: string[];
+        abbreviations: string;
+        brand_emoji: string;
+        hashtag: string;
+        gratitude_expressions: string[];
     };
-    communication_style: {
-        tone: string;
-        openers: string[];
-        phrasing_examples: string[];
-        avoid: string[];
+    technology_detection: {
+        nodejs: string[];
+        react: string[];
+        docker: string[];
+        system_design: string[];
+        database: string[];
+        auth: string[];
+        cloud: string[];
+        fullstack: string[];
+        webrtc: string[];
+        general_coding: string[];
+    };
+    all_resources: {
+        primary_platforms: {
+            main_website: string;
+            courses_platform: string;
+            pro_courses: string;
+            teachyst_platform: string;
+        };
+        social_media: {
+            youtube: string;
+            twitter: string;
+            linkedin: string;
+            github_main: string;
+            github_alt: string;
+            instagram: string;
+            peerlist: string;
+        };
+        github_repos: {
+            genai_cohort: string;
+            general_projects: string;
+        };
+    };
+    current_courses: {
+        active_programs: ({
+            name: string;
+            collaboration: string;
+            tech: string[];
+            status: string;
+            link: string;
+            description: string;
+        } | {
+            name: string;
+            tech: string[];
+            link: string;
+            description: string;
+            collaboration?: undefined;
+            status?: undefined;
+        })[];
+    };
+    collaboration_projects: {
+        chai_aur_code: {
+            partner: string;
+            project: string;
+            platform: string;
+            status: string;
+            description: string;
+        };
+        udemy_courses: {
+            nodejs_course: string;
+            partner: string;
+            link: string;
+        };
+    };
+    dynamic_response_templates: {
+        free_resource_intro: {
+            youtube_mention: string;
+            github_mention: string;
+            project_mention: string;
+        };
+        course_recommendation: {
+            beginner: string;
+            intermediate: string;
+            fullstack: string;
+        };
+        connection_invite: {
+            youtube: string;
+            linkedin: string;
+            twitter: string;
+        };
+    };
+    response_intelligence: {
+        user_level_detection: {
+            beginner_indicators: string[];
+            intermediate_indicators: string[];
+            advanced_indicators: string[];
+        };
+        query_type_detection: {
+            simple_greeting: {
+                triggers: string[];
+                response_style: string;
+                max_length: string;
+                include_promotion: boolean;
+            };
+            learning_query: {
+                triggers: string[];
+                response_style: string;
+                include_promotion: boolean;
+                resource_priority: string[];
+            };
+            technical_question: {
+                triggers: string[];
+                response_style: string;
+                include_promotion: boolean;
+                focus: string;
+            };
+            project_help: {
+                triggers: string[];
+                response_style: string;
+                include_promotion: boolean;
+                priority: string;
+            };
+        };
+        overwhelm_prevention: {
+            max_courses_mentioned: number;
+            max_social_links: number;
+            max_github_repos: number;
+            progressive_disclosure: boolean;
+        };
+    };
+    dynamic_resource_mapping: {
+        nodejs: {
+            youtube_series: string;
+            primary_course: string;
+            udemy_option: string;
+        };
+        react: {
+            youtube_series: string;
+            primary_course: string;
+            nextjs_course: string;
+        };
+        docker: {
+            youtube_series: string;
+            primary_course: string;
+            link: string;
+        };
+        system_design: {
+            youtube_series: string;
+            focus: string;
+        };
+        fullstack: {
+            primary_course: string;
+            project_course: string;
+            description: string;
+        };
+        teachyst: {
+            platform: string;
+            link: string;
+            description: string;
+        };
     };
     response_framework: {
         technical_question: string[];
         career_question: string[];
+        project_question: string[];
+    };
+    collaboration_mentions: {
+        hitesh_choudhary: {
+            relationship: string;
+            joint_project: string;
+            appreciation: string;
+            platform: string;
+        };
     };
     safety_and_policy_guidelines: string;
     training_examples: {
         user_input: string;
         expected_response: string;
-        context: string;
     }[];
+    "Don't": {
+        marketing: {
+            guidelines: {
+                description: string;
+                max_sentences: number;
+                link_requirement: string;
+                frequency_limit: string;
+            };
+        };
+        long_messages: {
+            guidelines: {
+                description: string;
+                max_lines: number;
+                style_guidance: string[];
+            };
+        };
+        ai_identity: {
+            description: string;
+            avoid_phrases: string[];
+        };
+        theoretical_responses: {
+            description: string;
+            focus: string;
+        };
+        overwhelming_technical_jargon: {
+            description: string;
+        };
+    };
+    repetition_handling: {
+        greeting_spam: {
+            detection: {
+                window_turns: number;
+                min_repetitions: number;
+                token_set: string[];
+            };
+            response_policy: {
+                max_length: string;
+                include_promotion: boolean;
+                example: string;
+            };
+        };
+        repeated_question: {
+            detection: {
+                similarity_threshold: number;
+                min_repetitions: number;
+            };
+            response_policy: {
+                structure: string[];
+            };
+        };
+    };
+    hard_rules: {
+        project_first_approach: {
+            description: string;
+            enforcement: string;
+        };
+        practical_examples: {
+            description: string;
+            enforcement: string;
+        };
+        encouraging_tone: {
+            description: string;
+            enforcement: string;
+        };
+        link_availability: {
+            description: string;
+            check_sources: string[];
+            on_missing_link: {
+                behavior: string;
+                example: string;
+            };
+        };
+    };
     final_instructions: string;
-    social_profiles: {
-        name: string;
-        url: string;
-    }[];
 };
 //# sourceMappingURL=prompts.d.ts.map
