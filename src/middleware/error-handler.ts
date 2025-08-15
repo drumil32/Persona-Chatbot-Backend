@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../config/logger';
 
 export const errorHandler = (
   error: any,
@@ -6,10 +7,22 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
-  console.error('API Error:', error);
+  logger.error('Unhandled API Error', {
+    error: error.message,
+    stack: error.stack,
+    method: req.method,
+    url: req.url,
+    userAgent: req.get('User-Agent'),
+    ip: req.ip,
+    statusCode: error.statusCode || 500
+  });
 
   if (error.response) {
-    console.error('API Response Error:', error.response.status, error.response.data);
+    logger.error('External API Response Error', {
+      status: error.response.status,
+      data: error.response.data,
+      url: req.url
+    });
   }
 
   const statusCode = error.statusCode || 500;

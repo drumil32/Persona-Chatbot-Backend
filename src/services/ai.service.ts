@@ -1,6 +1,7 @@
 import { OpenAI } from 'openai';
 import { createAIClients, modelMappings } from '../config/ai-models';
 import { AIModelKey, UserData } from '../types';
+import { logger } from '../config/logger';
 
 class AIService {
   private clients: Record<AIModelKey, OpenAI>;
@@ -42,14 +43,32 @@ class AIService {
     const selectedClient = this.clients[model];
     const actualModelName = modelMappings[model];
 
-    console.log(`Using model: ${model} (API model: ${actualModelName}) for user: ${userData.name} (Message #${userData.messageCount})`);
+    logger.info('AI request started', { 
+      model, 
+      actualModelName, 
+      userName: userData.name, 
+      messageCount: userData.messageCount,
+      messageHistoryLength: userData.history.length
+    });
     
+    const startTime = Date.now();
     const response = await selectedClient.chat.completions.create({
       messages: apiMessages,
       model: actualModelName,
     });
+    const duration = Date.now() - startTime;
 
-    return response.choices[0].message.content || '';
+    const responseContent = response.choices[0].message.content || '';
+    
+    logger.info('AI response received', { 
+      model, 
+      userName: userData.name, 
+      responseLength: responseContent.length,
+      duration: `${duration}ms`,
+      tokensUsed: response.usage?.total_tokens || 'unknown'
+    });
+
+    return responseContent;
   }
 }
 

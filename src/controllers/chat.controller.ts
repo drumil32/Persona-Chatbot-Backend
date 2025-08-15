@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { ChatRequest, AIModelKey } from '../types';
 import { userService } from '../services/user.service';
 import { aiService } from '../services/ai.service';
+import { logger } from '../config/logger';
 
 export const chatController = async (req: Request, res: Response) => {
   try {
@@ -47,7 +48,13 @@ export const chatController = async (req: Request, res: Response) => {
       lastActiveAt: updatedUserData.lastActiveAt
     });
   } catch (error: any) {
-    console.error('Chat controller error:', error);
+    logger.error('Chat controller error', { 
+      error: error.message, 
+      stack: error.stack,
+      userName: req.body.userName || 'Unknown',
+      model: req.body.model || 'Unknown'
+    });
+    
     res.status(500).json({
       error: 'Failed to process chat request',
       details: error.message

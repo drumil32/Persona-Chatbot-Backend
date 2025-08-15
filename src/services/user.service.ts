@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { UserData } from '../types';
+import { logger } from '../config/logger';
 
 class UserService {
   private userMap: Map<string, UserData> = new Map();
@@ -28,7 +29,7 @@ class UserService {
     };
     
     this.userMap.set(userName, newUser);
-    console.log(`Initialized user: ${userName}`);
+    logger.info('User initialized', { userName, userId: newUser.name });
     return newUser;
   }
 
@@ -57,6 +58,13 @@ class UserService {
       userData.messageCount++;
       userData.lastActiveAt = new Date();
       this.userMap.set(userName, userData);
+      
+      logger.debug('Message added to user history', { 
+        userName, 
+        role, 
+        messageCount: userData.messageCount,
+        model 
+      });
     }
   }
 
@@ -88,7 +96,7 @@ class UserService {
     userData.lastActiveAt = new Date();
     this.userMap.set(userName, userData);
 
-    console.log(`Cleared chat history for user: ${userName}`);
+    logger.info('User chat history cleared', { userName, previousMessageCount: userData.messageCount });
     return true;
   }
 
@@ -100,7 +108,7 @@ class UserService {
       }
       return fs.readFileSync(systemPromptPath, 'utf-8');
     } catch (error: any) {
-      console.error(`Error reading system prompt for ${userName}:`, error.message);
+      logger.error('Failed to read system prompt', { userName, error: error.message });
       throw error;
     }
   }
