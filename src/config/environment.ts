@@ -33,5 +33,12 @@ export const config = {
       process.env.ALLOWED_ORIGIN_1,
       process.env.ALLOWED_ORIGIN_2
     ].filter(Boolean) as string[], // Remove undefined values
+  },
+
+  rateLimit: {
+    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000'), // 1 minute default
+    maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '10'), // 10 requests per window default
+    skipSuccessfulRequests: process.env.RATE_LIMIT_SKIP_SUCCESSFUL === 'true',
+    skipFailedRequests: process.env.RATE_LIMIT_SKIP_FAILED === 'true',
   }
 } as const;
