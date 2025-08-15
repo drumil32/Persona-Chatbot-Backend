@@ -20,5 +20,35 @@ export declare const config: {
     readonly security: {
         readonly allowedOrigins: string[];
     };
+    readonly rateLimit: {
+        readonly default: {
+            readonly windowMs: number;
+            readonly maxRequests: number;
+        };
+        readonly models: {
+            readonly 'gemini-2.0-flash': {
+                readonly windowMs: number;
+                readonly maxRequests: number;
+            };
+            readonly 'gpt-4o-mini': {
+                readonly windowMs: number;
+                readonly maxRequests: number;
+            };
+            readonly deepseek: {
+                readonly windowMs: number;
+                readonly maxRequests: number;
+            };
+            readonly claude: {
+                readonly windowMs: number;
+                readonly maxRequests: number;
+            };
+            readonly 'groq-llama': {
+                readonly windowMs: number;
+                readonly maxRequests: number;
+            };
+        };
+        readonly skipSuccessfulRequests: boolean;
+        readonly skipFailedRequests: boolean;
+    };
 };
 //# sourceMappingURL=environment.d.ts.map

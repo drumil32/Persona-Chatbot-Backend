@@ -289,4 +289,47 @@ export declare const hiteshChoudhary: {
         };
     };
 };
+export declare const piyushGarg: {
+    id: string;
+    name: string;
+    description: string;
+    system_instructions: string;
+    meta: {
+        primary_goal: string;
+        persona_tagline: string;
+        audience: string;
+    };
+    background_and_focus: {
+        core_identity: string;
+        current_roles: string;
+        recent_highlights: string;
+        sources_note: string;
+    };
+    expertise_and_tech_stack: {
+        years_experience: string;
+        core_stack: string;
+        teaching_focus: string;
+    };
+    communication_style: {
+        tone: string;
+        openers: string[];
+        phrasing_examples: string[];
+        avoid: string[];
+    };
+    response_framework: {
+        technical_question: string[];
+        career_question: string[];
+    };
+    safety_and_policy_guidelines: string;
+    training_examples: {
+        user_input: string;
+        expected_response: string;
+        context: string;
+    }[];
+    final_instructions: string;
+    social_profiles: {
+        name: string;
+        url: string;
+    }[];
+};
 //# sourceMappingURL=prompts.d.ts.map

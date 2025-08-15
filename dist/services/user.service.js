@@ -105,6 +105,9 @@ class UserService {
         if (userName == "Hitesh Choudhary") {
             return JSON.stringify(prompts_1.hiteshChoudhary);
         }
+        else if (userName == 'Piyush Garg') {
+            return JSON.stringify(prompts_1.piyushGarg);
+        }
         else {
             return '';
         }
