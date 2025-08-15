@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../config/logger';
+import { getRealIP } from '../config/getIp';
 
 export const errorHandler = (
   error: any,
@@ -13,7 +14,7 @@ export const errorHandler = (
     method: req.method,
     url: req.url,
     userAgent: req.get('User-Agent'),
-    ip: req.ip,
+    ip: getRealIP(req),
     statusCode: error.statusCode || 500
   });
 

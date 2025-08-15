@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../config/logger';
+import { getRealIP } from '../config/getIp';
 
 export const requestLogger = (req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
@@ -9,7 +10,7 @@ export const requestLogger = (req: Request, res: Response, next: NextFunction) =
     method: req.method,
     url: req.url,
     userAgent: req.get('User-Agent'),
-    ip: req.ip,
+    ip: getRealIP(req),
     body: req.method === 'POST' ? { ...req.body, message: req.body.message ? '[TRUNCATED]' : undefined } : undefined
   });
 

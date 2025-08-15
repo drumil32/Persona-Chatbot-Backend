@@ -10,6 +10,9 @@ import { logger } from './config/logger';
 
 const app = express();
 
+// Trust proxy to get real IP addresses
+app.set('trust proxy', 'loopback');
+
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: true }));

@@ -4,10 +4,20 @@ import { UserData } from '../types';
 import { logger } from '../config/logger';
 
 class UserService {
-  private userMap: Map<string, UserData> = new Map();
+  // IP -> (UserName -> UserData)
+  private readonly ipUserMaps: Map<string, Map<string, UserData>> = new Map();
 
-  getUserData(userName: string): UserData | null {
-    return this.userMap.get(userName) || null;
+  private getUserMapForIP(ip: string): Map<string, UserData> {
+    if (!this.ipUserMaps.has(ip)) {
+      this.ipUserMaps.set(ip, new Map());
+      logger.debug('Created new user map for IP', { ip });
+    }
+    return this.ipUserMaps.get(ip)!;
+  }
+
+  getUserData(userName: string, ip: string): UserData | null {
+    const userMap = this.getUserMapForIP(ip);
+    return userMap.get(userName) || null;
   }
 
   userExists(userName: string): boolean {
@@ -15,7 +25,7 @@ class UserService {
     return fs.existsSync(systemPromptPath);
   }
 
-  initializeUser(userName: string): UserData {
+  initializeUser(userName: string, ip: string): UserData {
     if (!this.userExists(userName)) {
       throw new Error(`User ${userName} does not exist`);
     }
@@ -28,16 +38,18 @@ class UserService {
       messageCount: 0
     };
     
-    this.userMap.set(userName, newUser);
-    logger.info('User initialized', { userName, userId: newUser.name });
+    const userMap = this.getUserMapForIP(ip);
+    userMap.set(userName, newUser);
+    logger.info('User initialized', { userName, userId: newUser.name, ip });
     return newUser;
   }
 
-  updateUserActivity(userName: string): void {
-    const userData = this.getUserData(userName);
+  updateUserActivity(userName: string, ip: string): void {
+    const userData = this.getUserData(userName, ip);
     if (userData) {
       userData.lastActiveAt = new Date();
-      this.userMap.set(userName, userData);
+      const userMap = this.getUserMapForIP(ip);
+      userMap.set(userName, userData);
     }
   }
 
@@ -45,9 +57,10 @@ class UserService {
     userName: string, 
     role: 'user' | 'assistant', 
     content: string, 
+    ip: string,
     model?: string
   ): void {
-    const userData = this.getUserData(userName);
+    const userData = this.getUserData(userName, ip);
     if (userData) {
       userData.history.push({
         role,
@@ -57,19 +70,22 @@ class UserService {
       });
       userData.messageCount++;
       userData.lastActiveAt = new Date();
-      this.userMap.set(userName, userData);
+      const userMap = this.getUserMapForIP(ip);
+      userMap.set(userName, userData);
       
       logger.debug('Message added to user history', { 
         userName, 
         role, 
         messageCount: userData.messageCount,
-        model 
+        model,
+        ip 
       });
     }
   }
 
-  getAllUsers(): Array<{ name: string; messageCount: number; createdAt: Date; lastActiveAt: Date }> {
-    return Array.from(this.userMap.entries()).map(([userName, userData]) => ({
+  getAllUsers(ip: string): Array<{ name: string; messageCount: number; createdAt: Date; lastActiveAt: Date }> {
+    const userMap = this.getUserMapForIP(ip);
+    return Array.from(userMap.entries()).map(([userName, userData]) => ({
       name: userData.name,
       messageCount: userData.messageCount,
       createdAt: userData.createdAt,
@@ -77,26 +93,33 @@ class UserService {
     }));
   }
 
-  getTotalUserCount(): number {
-    return this.userMap.size;
+  getTotalUserCount(ip: string): number {
+    const userMap = this.getUserMapForIP(ip);
+    return userMap.size;
   }
 
-  clearUserHistory(userName: string): boolean {
+  getTotalIPCount(): number {
+    return this.ipUserMaps.size;
+  }
+
+  clearUserHistory(userName: string, ip: string): boolean {
     if (!this.userExists(userName)) {
       return false;
     }
 
-    const userData = this.getUserData(userName);
+    const userData = this.getUserData(userName, ip);
     if (!userData) {
       return false;
     }
 
+    const previousMessageCount = userData.messageCount;
     userData.history = [];
     userData.messageCount = 0;
     userData.lastActiveAt = new Date();
-    this.userMap.set(userName, userData);
+    const userMap = this.getUserMapForIP(ip);
+    userMap.set(userName, userData);
 
-    logger.info('User chat history cleared', { userName, previousMessageCount: userData.messageCount });
+    logger.info('User chat history cleared', { userName, previousMessageCount, ip });
     return true;
   }
 

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { config } from '../config/environment';
 import { logger } from '../config/logger';
+import { getRealIP } from '../config/getIp';
 
 export const validateOrigin = (req: Request, res: Response, next: NextFunction) => {
   const origin = req.get('Origin') || req.get('Referer');
@@ -10,7 +11,7 @@ export const validateOrigin = (req: Request, res: Response, next: NextFunction) 
     logger.debug('Request without origin header - allowing');
     return next();
   }
-
+  
   // Extract the origin from referer if needed
   const requestOrigin = origin.includes('://') ? new URL(origin).origin : origin;
   
@@ -34,7 +35,7 @@ export const validateOrigin = (req: Request, res: Response, next: NextFunction) 
     method: req.method,
     path: req.path,
     userAgent: req.get('User-Agent'),
-    ip: req.ip
+    ip: getRealIP(req),
   });
 
   return res.status(403).json({
