@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { UserData } from '../types';
 import { logger } from '../config/logger';
-import {hiteshChoudhary} from '../systemPrompts/prompts';
+import {hiteshChoudhary, piyushGarg} from '../systemPrompts/prompts';
+import { json } from 'stream/consumers';
 
 class UserService {
   // IP -> (UserName -> UserData)
@@ -126,6 +127,8 @@ class UserService {
   getUserSystemPrompt(userName: string): string {
     if( userName=="Hitesh Choudhary" ){
       return JSON.stringify(hiteshChoudhary);
+    }else if(userName=='Piyush Garg'){
+      return JSON.stringify(piyushGarg);
     }else{
       return '';
     }

@@ -36,8 +36,37 @@ export const config = {
   },
 
   rateLimit: {
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000'), // 1 minute default
-    maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '10'), // 10 requests per window default
+    // Default rate limits
+    default: {
+      windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '60000'), // 1 minute default
+      maxRequests: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '10'), // 10 requests per window default
+    },
+    
+    // Model-specific rate limits
+    models: {
+      'gemini-2.0-flash': {
+        windowMs: parseInt(process.env.RATE_LIMIT_GEMINI_WINDOW_MS || process.env.RATE_LIMIT_WINDOW_MS || '60000'),
+        maxRequests: parseInt(process.env.RATE_LIMIT_GEMINI_MAX_REQUESTS || process.env.RATE_LIMIT_MAX_REQUESTS || '15'),
+      },
+      'gpt-4o-mini': {
+        windowMs: parseInt(process.env.RATE_LIMIT_GPT_WINDOW_MS || process.env.RATE_LIMIT_WINDOW_MS || '60000'),
+        maxRequests: parseInt(process.env.RATE_LIMIT_GPT_MAX_REQUESTS || process.env.RATE_LIMIT_MAX_REQUESTS || '8'),
+      },
+      'deepseek': {
+        windowMs: parseInt(process.env.RATE_LIMIT_DEEPSEEK_WINDOW_MS || process.env.RATE_LIMIT_WINDOW_MS || '60000'),
+        maxRequests: parseInt(process.env.RATE_LIMIT_DEEPSEEK_MAX_REQUESTS || process.env.RATE_LIMIT_MAX_REQUESTS || '12'),
+      },
+      'claude': {
+        windowMs: parseInt(process.env.RATE_LIMIT_CLAUDE_WINDOW_MS || process.env.RATE_LIMIT_WINDOW_MS || '60000'),
+        maxRequests: parseInt(process.env.RATE_LIMIT_CLAUDE_MAX_REQUESTS || process.env.RATE_LIMIT_MAX_REQUESTS || '5'),
+      },
+      'groq-llama': {
+        windowMs: parseInt(process.env.RATE_LIMIT_GROQ_WINDOW_MS || process.env.RATE_LIMIT_WINDOW_MS || '60000'),
+        maxRequests: parseInt(process.env.RATE_LIMIT_GROQ_MAX_REQUESTS || process.env.RATE_LIMIT_MAX_REQUESTS || '20'),
+      },
+    },
+    
+    // Global settings
     skipSuccessfulRequests: process.env.RATE_LIMIT_SKIP_SUCCESSFUL === 'true',
     skipFailedRequests: process.env.RATE_LIMIT_SKIP_FAILED === 'true',
   }

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { config } from '../config/environment';
 import { getRealIP } from '../config/getIp';
 import { logger } from '../config/logger';
-import { ChatRequest } from '../types';
+import { ChatRequest, AIModelKey } from '../types';
 
 // Custom key generator: IP + userName + model
 const createRateLimitKey = (req: Request): string => {
@@ -12,21 +12,29 @@ const createRateLimitKey = (req: Request): string => {
   return `${ip}:${userName}:${model}`;
 };
 
+// Get model-specific rate limit configuration
+const getModelRateLimit = (model: AIModelKey) => {
+  return config.rateLimit.models[model] || config.rateLimit.default;
+};
+
 // Custom rate limit store using Map for simplicity
 class MemoryStore {
-  private hits: Map<string, { count: number; resetTime: number }> = new Map();
+  private hits: Map<string, { count: number; resetTime: number; windowMs: number; maxRequests: number }> = new Map();
 
   incr(key: string, cb: (error: any, current?: number, resetTime?: Date) => void): void {
     const now = Date.now();
-    const windowMs = config.rateLimit.windowMs;
-    const maxRequests = config.rateLimit.maxRequests;
+    
+    // Extract model from key to get model-specific limits
+    const model = key.split(':')[2] as AIModelKey;
+    const limits = getModelRateLimit(model);
+    const { windowMs, maxRequests } = limits;
     
     const hit = this.hits.get(key);
     
     if (!hit || now > hit.resetTime) {
       // New window or expired window
       const resetTime = now + windowMs;
-      this.hits.set(key, { count: 1, resetTime });
+      this.hits.set(key, { count: 1, resetTime, windowMs, maxRequests });
       cb(null, 1, new Date(resetTime));
     } else {
       // Within current window
@@ -71,8 +79,12 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 export const chatRateLimit = rateLimit({
-  windowMs: config.rateLimit.windowMs,
-  max: config.rateLimit.maxRequests,
+  windowMs: config.rateLimit.default.windowMs, // Default, but will be overridden per model
+  max: (req: Request) => {
+    const { model = 'gemini-2.0-flash' }: ChatRequest = req.body;
+    const limits = getModelRateLimit(model as AIModelKey);
+    return limits.maxRequests;
+  },
   
   // Custom key generator
   keyGenerator: createRateLimitKey,
@@ -84,23 +96,25 @@ export const chatRateLimit = rateLimit({
   handler: (req: Request, res: Response) => {
     const key = createRateLimitKey(req);
     const { userName = 'User', model = 'gemini-2.0-flash' }: ChatRequest = req.body;
+    const limits = getModelRateLimit(model as AIModelKey);
     
     logger.warn('Rate limit exceeded', {
       key,
       ip: getRealIP(req),
       userName,
       model,
-      limit: config.rateLimit.maxRequests,
-      windowMs: config.rateLimit.windowMs,
+      limit: limits.maxRequests,
+      windowMs: limits.windowMs,
       userAgent: req.get('User-Agent')
     });
 
     res.status(429).json({
       error: 'Too Many Requests',
       message: `Rate limit exceeded for ${userName} using ${model}. Please try again later.`,
-      retryAfter: Math.ceil(config.rateLimit.windowMs / 1000),
-      limit: config.rateLimit.maxRequests,
-      windowMs: config.rateLimit.windowMs
+      retryAfter: Math.ceil(limits.windowMs / 1000),
+      limit: limits.maxRequests,
+      windowMs: limits.windowMs,
+      model: model
     });
   },
 
