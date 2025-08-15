@@ -1,0 +1,124 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.userService = void 0;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const logger_1 = require("../config/logger");
+class UserService {
+    constructor() {
+        // IP -> (UserName -> UserData)
+        this.ipUserMaps = new Map();
+    }
+    getUserMapForIP(ip) {
+        if (!this.ipUserMaps.has(ip)) {
+            this.ipUserMaps.set(ip, new Map());
+            logger_1.logger.debug('Created new user map for IP', { ip });
+        }
+        return this.ipUserMaps.get(ip);
+    }
+    getUserData(userName, ip) {
+        const userMap = this.getUserMapForIP(ip);
+        return userMap.get(userName) || null;
+    }
+    userExists(userName) {
+        const systemPromptPath = path_1.default.join(__dirname, '..', `${userName}.md`);
+        return fs_1.default.existsSync(systemPromptPath);
+    }
+    initializeUser(userName, ip) {
+        if (!this.userExists(userName)) {
+            throw new Error(`User ${userName} does not exist`);
+        }
+        const newUser = {
+            name: userName,
+            history: [],
+            createdAt: new Date(),
+            lastActiveAt: new Date(),
+            messageCount: 0
+        };
+        const userMap = this.getUserMapForIP(ip);
+        userMap.set(userName, newUser);
+        logger_1.logger.info('User initialized', { userName, userId: newUser.name, ip });
+        return newUser;
+    }
+    updateUserActivity(userName, ip) {
+        const userData = this.getUserData(userName, ip);
+        if (userData) {
+            userData.lastActiveAt = new Date();
+            const userMap = this.getUserMapForIP(ip);
+            userMap.set(userName, userData);
+        }
+    }
+    addMessageToUserHistory(userName, role, content, ip, model) {
+        const userData = this.getUserData(userName, ip);
+        if (userData) {
+            userData.history.push({
+                role,
+                content,
+                timestamp: new Date(),
+                model
+            });
+            userData.messageCount++;
+            userData.lastActiveAt = new Date();
+            const userMap = this.getUserMapForIP(ip);
+            userMap.set(userName, userData);
+            logger_1.logger.debug('Message added to user history', {
+                userName,
+                role,
+                messageCount: userData.messageCount,
+                model,
+                ip
+            });
+        }
+    }
+    getAllUsers(ip) {
+        const userMap = this.getUserMapForIP(ip);
+        return Array.from(userMap.entries()).map(([userName, userData]) => ({
+            name: userData.name,
+            messageCount: userData.messageCount,
+            createdAt: userData.createdAt,
+            lastActiveAt: userData.lastActiveAt
+        }));
+    }
+    getTotalUserCount(ip) {
+        const userMap = this.getUserMapForIP(ip);
+        return userMap.size;
+    }
+    getTotalIPCount() {
+        return this.ipUserMaps.size;
+    }
+    clearUserHistory(userName, ip) {
+        if (!this.userExists(userName)) {
+            return false;
+        }
+        const userData = this.getUserData(userName, ip);
+        if (!userData) {
+            return false;
+        }
+        const previousMessageCount = userData.messageCount;
+        userData.history = [];
+        userData.messageCount = 0;
+        userData.lastActiveAt = new Date();
+        const userMap = this.getUserMapForIP(ip);
+        userMap.set(userName, userData);
+        logger_1.logger.info('User chat history cleared', { userName, previousMessageCount, ip });
+        return true;
+    }
+    getUserSystemPrompt(userName) {
+        try {
+            const systemPromptPath = path_1.default.join(__dirname, '..', `${userName}.json`);
+            if (!fs_1.default.existsSync(systemPromptPath)) {
+                throw new Error(`System prompt file not found for user: ${userName}`);
+            }
+            return fs_1.default.readFileSync(systemPromptPath, 'utf-8');
+        }
+        catch (error) {
+            logger_1.logger.error('Failed to read system prompt', { userName, error: error.message });
+            throw error;
+        }
+    }
+}
+exports.userService = new UserService();
+//# sourceMappingURL=user.service.js.map
