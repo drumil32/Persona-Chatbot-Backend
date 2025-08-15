@@ -19,5 +19,19 @@ export const config = {
     deepseek: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com/v1',
     claude: process.env.CLAUDE_BASE_URL || 'https://api.anthropic.com/v1',
     groq: process.env.GROQ_BASE_URL || 'https://api.groq.com/openai/v1',
+  },
+
+  cors: {
+    allowedOrigins: [
+      process.env.FRONTEND_URL_1,
+      process.env.FRONTEND_URL_2
+    ].filter(Boolean) as string[], // Remove undefined values
+  },
+
+  security: {
+    allowedOrigins: [
+      process.env.ALLOWED_ORIGIN_1,
+      process.env.ALLOWED_ORIGIN_2
+    ].filter(Boolean) as string[], // Remove undefined values
   }
 } as const;
