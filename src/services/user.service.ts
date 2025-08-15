@@ -125,7 +125,7 @@ class UserService {
 
   getUserSystemPrompt(userName: string): string {
     try {
-      const systemPromptPath = path.join(__dirname, '..', `${userName}.json`);
+      const systemPromptPath = path.join(__dirname, '../systemPrompts', `${userName}.json`);
       if (!fs.existsSync(systemPromptPath)) {
         throw new Error(`System prompt file not found for user: ${userName}`);
       }
