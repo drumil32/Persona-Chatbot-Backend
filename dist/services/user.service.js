@@ -1,11 +1,6 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userService = void 0;
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
 const logger_1 = require("../config/logger");
 const prompts_1 = require("../systemPrompts/prompts");
 class UserService {
@@ -25,8 +20,7 @@ class UserService {
         return userMap.get(userName) || null;
     }
     userExists(userName) {
-        const systemPromptPath = path_1.default.join(__dirname, '..', `${userName}.md`);
-        return fs_1.default.existsSync(systemPromptPath);
+        return userName == 'Hitesh Choudhary' || userName == 'Piyush Garg';
     }
     initializeUser(userName, ip) {
         if (!this.userExists(userName)) {
