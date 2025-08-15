@@ -22,8 +22,7 @@ class UserService {
   }
 
   userExists(userName: string): boolean {
-    const systemPromptPath = path.join(__dirname, '..', `${userName}.md`);
-    return fs.existsSync(systemPromptPath);
+    return userName=='Hitesh Choudhary' || userName=='Piyush Garg';
   }
 
   initializeUser(userName: string, ip: string): UserData {
